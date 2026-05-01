@@ -5,13 +5,13 @@ import { userService, User } from '../services/userService';
 import { Task, Project, CreateTaskData, UpdateTaskData, FilterOptions } from '../types';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 import { 
   PlusIcon,
   PencilIcon,
   TrashIcon,
   CheckCircleIcon,
   ClockIcon,
-  ExclamationTriangleIcon,
   CalendarIcon,
   FunnelIcon
 } from '@heroicons/react/24/outline';
@@ -102,9 +102,26 @@ export const Tasks: React.FC = () => {
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.projectId) {
+      toast.error('Please select a project');
+      return;
+    }
+
+    if (!formData.assignedTo) {
+      toast.error('Please select a team member');
+      return;
+    }
+
+    if (!formData.dueDate) {
+      toast.error('Please select a due date');
+      return;
+    }
+
     try {
       const response = await taskService.createTask(formData);
       if (response.success) {
+        toast.success('Task created successfully');
         setShowCreateModal(false);
         setFormData({
           title: '',
@@ -119,7 +136,13 @@ export const Tasks: React.FC = () => {
         setError(response.message);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to create task');
+      const message =
+        err.response?.data?.details?.[0]?.msg ||
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to create task';
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -139,6 +162,7 @@ export const Tasks: React.FC = () => {
 
       const response = await taskService.updateTask(selectedTask._id, updateData);
       if (response.success) {
+        toast.success('Task updated successfully');
         setShowEditModal(false);
         setSelectedTask(null);
         setFormData({
@@ -154,7 +178,13 @@ export const Tasks: React.FC = () => {
         setError(response.message);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to update task');
+      const message =
+        err.response?.data?.details?.[0]?.msg ||
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to update task';
+      setError(message);
+      toast.error(message);
     }
   };
 

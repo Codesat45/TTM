@@ -47,15 +47,12 @@ const createTask = async (req, res) => {
       });
     }
 
-    const isUserProjectMember = project.members.includes(assignedTo) || 
+    const isUserProjectMember = project.members.some(member => member.toString() === assignedTo) ||
                                project.createdBy.toString() === assignedTo;
     
     if (!isUserProjectMember) {
-      return res.status(400).json({
-        success: false,
-        message: 'Assigned user must be a member of the project',
-        error: 'USER_NOT_PROJECT_MEMBER'
-      });
+      project.members.addToSet(assignedTo);
+      await project.save();
     }
 
     const task = new Task({
@@ -303,15 +300,12 @@ const updateTask = async (req, res) => {
         });
       }
 
-      const isUserProjectMember = project.members.includes(assignedTo) || 
+      const isUserProjectMember = project.members.some(member => member.toString() === assignedTo) ||
                                  project.createdBy.toString() === assignedTo;
       
       if (!isUserProjectMember) {
-        return res.status(400).json({
-          success: false,
-          message: 'New assigned user must be a member of the project',
-          error: 'USER_NOT_PROJECT_MEMBER'
-        });
+        project.members.addToSet(assignedTo);
+        await project.save();
       }
 
       task.assignedTo = assignedTo;
