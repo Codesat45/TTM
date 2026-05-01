@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { projectService } from '../services/projectService';
 import { userService, User } from '../services/userService';
 import { Project, CreateProjectData, UpdateProjectData } from '../types';
@@ -27,6 +28,7 @@ export const Projects: React.FC = () => {
     members: []
   });
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const fetchProjects = async () => {
     try {
@@ -63,6 +65,13 @@ export const Projects: React.FC = () => {
     fetchProjects();
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    if (user?.role === 'Admin' && searchParams.get('create') === '1') {
+      setShowCreateModal(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams, user?.role]);
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();

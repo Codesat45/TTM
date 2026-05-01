@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { dashboardService } from '../services/dashboardService';
 import { DashboardStats } from '../types';
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import { useAuth } from '../context/AuthContext';
 import { 
   CheckCircleIcon,
   ClockIcon,
@@ -11,11 +12,13 @@ import {
   FireIcon,
   ArrowTrendingUpIcon,
   ChartBarIcon,
-  SparklesIcon
+  SparklesIcon,
+  PlusIcon
 } from '@heroicons/react/24/outline';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,8 +48,8 @@ export const Dashboard: React.FC = () => {
     navigate('/app/tasks');
   };
 
-  const handleNavigateToProjects = () => {
-    navigate('/app/projects');
+  const handleCreateProject = () => {
+    navigate('/app/projects?create=1');
   };
 
   const handleNavigateToProject = (projectId: string) => {
@@ -104,16 +107,28 @@ export const Dashboard: React.FC = () => {
                 Real-time insights into your team's performance
               </p>
             </div>
-            <select
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value as any)}
-              className="px-3 py-1.5 bg-netflix-dark/80 backdrop-blur-sm border border-gray-700 rounded-lg text-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300 text-sm"
-            >
-              <option value="all">All Time</option>
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </select>
+            <div className="flex items-center gap-3">
+              {user?.role === 'Admin' && (
+                <button
+                  type="button"
+                  onClick={handleCreateProject}
+                  className="inline-flex items-center justify-center rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-300 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/40"
+                >
+                  <PlusIcon className="h-5 w-5 mr-2" />
+                  New Project
+                </button>
+              )}
+              <select
+                value={timeRange}
+                onChange={(e) => setTimeRange(e.target.value as any)}
+                className="px-3 py-1.5 bg-netflix-dark/80 backdrop-blur-sm border border-gray-700 rounded-lg text-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300 text-sm"
+              >
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
