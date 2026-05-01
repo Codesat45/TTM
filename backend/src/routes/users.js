@@ -7,16 +7,18 @@ const {
   removeUserFromProject,
   getUserAssignments
 } = require('../controllers/userController');
-const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const authenticate = require('../middleware/auth');
+const { authorize } = require('../middleware/rbac');
 
 const router = express.Router();
+const requireAdmin = authorize('Admin');
 
 // Get all team members (Admin only)
-router.get('/team', authenticateToken, requireAdmin, getAllUsers);
+router.get('/team', authenticate, requireAdmin, getAllUsers);
 
 // Assign projects to user (Admin only)
 router.post('/:userId/assign-projects', 
-  authenticateToken, 
+  authenticate, 
   requireAdmin,
   [
     body('projectIds')
@@ -31,7 +33,7 @@ router.post('/:userId/assign-projects',
 
 // Assign tasks to user (Admin only)
 router.post('/:userId/assign-tasks', 
-  authenticateToken, 
+  authenticate, 
   requireAdmin,
   [
     body('taskIds')
@@ -46,7 +48,7 @@ router.post('/:userId/assign-tasks',
 
 // Remove user from project (Admin only)
 router.delete('/:userId/projects/:projectId', 
-  authenticateToken, 
+  authenticate, 
   requireAdmin,
   [
     param('userId').isMongoId().withMessage('Invalid user ID'),
@@ -57,7 +59,7 @@ router.delete('/:userId/projects/:projectId',
 
 // Get user assignments (Admin only)
 router.get('/:userId/assignments', 
-  authenticateToken, 
+  authenticate, 
   requireAdmin,
   [
     param('userId').isMongoId().withMessage('Invalid user ID')
