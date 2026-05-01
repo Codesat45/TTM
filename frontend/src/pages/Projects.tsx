@@ -35,7 +35,9 @@ export const Projects: React.FC = () => {
       setLoading(true);
       const response = await projectService.getProjects();
       if (response.success) {
-        setProjects(response.data.items);
+        const responseData = response.data as any;
+        const projectItems = responseData?.items || responseData?.projects || [];
+        setProjects(Array.isArray(projectItems) ? projectItems : []);
       } else {
         setError(response.message);
       }
@@ -134,7 +136,7 @@ export const Projects: React.FC = () => {
     setFormData({
       name: project.name,
       description: project.description,
-      members: project.members.map(member => member._id)
+      members: Array.isArray(project.members) ? project.members.map(member => member._id) : []
     });
     setShowEditModal(true);
   };
@@ -192,7 +194,11 @@ export const Projects: React.FC = () => {
 
       {/* Projects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
+        {projects.map((project) => {
+          const members = Array.isArray(project.members) ? project.members : [];
+          const createdByName = project.createdBy?.name || 'Unknown';
+
+          return (
           <div key={project._id} className="card p-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center">
@@ -229,17 +235,17 @@ export const Projects: React.FC = () => {
             <div className="flex items-center justify-between text-sm text-gray-500">
               <div className="flex items-center">
                 <UserGroupIcon className="h-4 w-4 mr-1" />
-                <span>{project.members.length} members</span>
+                <span>{members.length} members</span>
               </div>
               <div className="flex items-center">
                 <CheckCircleIcon className="h-4 w-4 mr-1" />
-                <span>Created by {project.createdBy.name}</span>
+                <span>Created by {createdByName}</span>
               </div>
             </div>
 
             <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="flex -space-x-2">
-                {project.members.slice(0, 4).map((member, index) => (
+                {members.slice(0, 4).map((member, index) => (
                   <div
                     key={member._id}
                     className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-xs font-medium border-2 border-white"
@@ -248,15 +254,16 @@ export const Projects: React.FC = () => {
                     {member.name.charAt(0).toUpperCase()}
                   </div>
                 ))}
-                {project.members.length > 4 && (
+                {members.length > 4 && (
                   <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white text-xs font-medium border-2 border-white">
-                    +{project.members.length - 4}
+                    +{members.length - 4}
                   </div>
                 )}
               </div>
             </div>
           </div>
-        ))}
+        );
+        })}
       </div>
 
       {projects.length === 0 && (
