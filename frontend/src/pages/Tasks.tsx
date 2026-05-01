@@ -75,7 +75,7 @@ export const Tasks: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await projectService.getProjects();
+      const response = await projectService.getProjects({ limit: 100 });
       if (response.success) {
         setProjects(normalizeList(response.data, 'projects'));
       }
@@ -98,6 +98,20 @@ export const Tasks: React.FC = () => {
       console.error('Failed to fetch users:', err);
       setUsers([]); // Set empty array as fallback
     }
+  };
+
+  const openCreateModal = async () => {
+    setError(null);
+    setFormData({
+      title: '',
+      description: '',
+      projectId: '',
+      assignedTo: '',
+      dueDate: '',
+      priority: 'Medium'
+    });
+    setShowCreateModal(true);
+    await Promise.all([fetchProjects(), fetchUsers()]);
   };
 
   const handleCreateTask = async (e: React.FormEvent) => {
@@ -271,7 +285,7 @@ export const Tasks: React.FC = () => {
         </div>
         {user?.role === 'Admin' && (
           <button
-            onClick={() => setShowCreateModal(true)}
+            onClick={openCreateModal}
             className="btn btn-primary"
           >
             <PlusIcon className="h-5 w-5 mr-2" />
@@ -419,7 +433,7 @@ export const Tasks: React.FC = () => {
           </p>
           {user?.role === 'Admin' && (
             <button
-              onClick={() => setShowCreateModal(true)}
+              onClick={openCreateModal}
               className="btn btn-primary"
             >
               <PlusIcon className="h-5 w-5 mr-2" />
@@ -479,6 +493,11 @@ export const Tasks: React.FC = () => {
                       </option>
                     )) : []}
                   </select>
+                  {projects.length === 0 && (
+                    <p className="text-xs text-red-400 mt-1">
+                      No projects found. Create a project first, then reopen this form.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
