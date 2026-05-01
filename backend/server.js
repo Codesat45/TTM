@@ -13,10 +13,15 @@ connectDB();
 
 app.use(helmet());
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://ttm-frontend-rprb.onrender.com',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
-    : ['http://localhost:3000', 'http://localhost:3001'],
+  origin: allowedOrigins,
   credentials: true
 }));
 
