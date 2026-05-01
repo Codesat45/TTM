@@ -84,7 +84,7 @@
   }
   
   .sidebar-closed {
-    @apply -translate-x-full;
+    @apply -translate-x-full lg:translate-x-0;
   }
   
   .navbar {

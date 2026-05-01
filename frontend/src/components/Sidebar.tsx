@@ -47,7 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <div className={`sidebar ${isOpen ? '' : 'sidebar-closed'}`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200">
+          <div className="flex items-center justify-center h-16 px-4 border-b border-gray-700">
             <h2 className="text-lg font-bold text-primary-600">Task Manager</h2>
           </div>
           
@@ -62,12 +62,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   onClick={onClose}
                   className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
                     isActive(item.href)
-                      ? 'bg-primary-100 text-primary-700 border-r-2 border-primary-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-red-500/15 text-red-400 border-r-2 border-red-500'
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   }`}
                 >
                   <Icon className={`mr-3 h-5 w-5 ${
-                    isActive(item.href) ? 'text-primary-700' : 'text-gray-400 group-hover:text-gray-500'
+                    isActive(item.href) ? 'text-red-400' : 'text-gray-500 group-hover:text-white'
                   }`} />
                   {item.name}
                 </NavLink>
@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             
             {user?.role === 'Admin' && (
               <>
-                <div className="pt-4 mt-4 border-t border-gray-200">
+                <div className="pt-4 mt-4 border-t border-gray-700">
                   <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Admin
                   </p>
@@ -90,12 +90,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                       onClick={onClose}
                       className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
                         isActive(item.href)
-                          ? 'bg-primary-100 text-primary-700 border-r-2 border-primary-700'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          ? 'bg-red-500/15 text-red-400 border-r-2 border-red-500'
+                          : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                       }`}
                     >
                       <Icon className={`mr-3 h-5 w-5 ${
-                        isActive(item.href) ? 'text-primary-700' : 'text-gray-400 group-hover:text-gray-500'
+                        isActive(item.href) ? 'text-red-400' : 'text-gray-500 group-hover:text-white'
                       }`} />
                       {item.name}
                     </NavLink>
@@ -106,7 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </nav>
           
           {/* User info */}
-          <div className="flex-shrink-0 p-4 border-t border-gray-200">
+          <div className="flex-shrink-0 p-4 border-t border-gray-700">
             <div className="flex items-center space-x-3">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
@@ -116,10 +116,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-medium text-white truncate">
                   {user?.name}
                 </p>
-                <p className="text-xs text-gray-500 truncate">
+                <p className="text-xs text-gray-400 truncate">
                   {user?.email}
                 </p>
               </div>
