@@ -51,14 +51,7 @@ const getProjects = async (req, res) => {
 
     let query = {};
     
-    if (req.user.role === 'Admin') {
-      query = {
-        $or: [
-          { createdBy: req.user._id },
-          { members: req.user._id }
-        ]
-      };
-    } else {
+    if (req.user.role !== 'Admin') {
       query = {
         $or: [
           { createdBy: req.user._id },

@@ -42,6 +42,13 @@ export const Tasks: React.FC = () => {
   });
   const { user } = useAuth();
 
+  const normalizeList = (data: any, key: string) => {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.items)) return data.items;
+    if (Array.isArray(data?.[key])) return data[key];
+    return [];
+  };
+
   useEffect(() => {
     fetchTasks();
     fetchProjects();
@@ -53,8 +60,7 @@ export const Tasks: React.FC = () => {
       setLoading(true);
       const response = await taskService.getTasks(filters);
       if (response.success) {
-        const tasksData = response.data.items || response.data;
-        setTasks(Array.isArray(tasksData) ? tasksData : []);
+        setTasks(normalizeList(response.data, 'tasks'));
       } else {
         setError(response.message);
         setTasks([]); // Set empty array as fallback
@@ -71,8 +77,7 @@ export const Tasks: React.FC = () => {
     try {
       const response = await projectService.getProjects();
       if (response.success) {
-        const projectsData = response.data.items || response.data;
-        setProjects(Array.isArray(projectsData) ? projectsData : []);
+        setProjects(normalizeList(response.data, 'projects'));
       }
     } catch (err: any) {
       console.error('Failed to fetch projects:', err);
@@ -128,7 +133,8 @@ export const Tasks: React.FC = () => {
         description: formData.description,
         status: formData.status as any,
         priority: formData.priority as any,
-        dueDate: formData.dueDate
+        dueDate: formData.dueDate,
+        assignedTo: formData.assignedTo
       };
 
       const response = await taskService.updateTask(selectedTask._id, updateData);
@@ -172,8 +178,8 @@ export const Tasks: React.FC = () => {
     setFormData({
       title: task.title,
       description: task.description,
-      projectId: task.projectId._id,
-      assignedTo: task.assignedTo._id,
+      projectId: task.projectId?._id || '',
+      assignedTo: task.assignedTo?._id || '',
       dueDate: new Date(task.dueDate).toISOString().split('T')[0],
       priority: task.priority,
       status: task.status
@@ -464,11 +470,12 @@ export const Tasks: React.FC = () => {
                       Assign To
                     </label>
                     <select
+                      required
                       value={formData.assignedTo}
                       onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
                       className="input"
                     >
-                      <option value="">Unassigned</option>
+                      <option value="">Select a member</option>
                       {Array.isArray(users) && users.map((user) => (
                         <option key={user._id} value={user._id}>
                           {user.name} ({user.email})
@@ -577,11 +584,12 @@ export const Tasks: React.FC = () => {
                       Assign To
                     </label>
                     <select
+                      required
                       value={formData.assignedTo}
                       onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
                       className="input"
                     >
-                      <option value="">Unassigned</option>
+                      <option value="">Select a member</option>
                       {Array.isArray(users) && users.map((user) => (
                         <option key={user._id} value={user._id}>
                           {user.name} ({user.email})

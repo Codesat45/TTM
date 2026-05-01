@@ -64,7 +64,8 @@ const assignProjectsToUser = async (req, res) => {
       });
     }
 
-    const { userId, projectIds } = req.body;
+    const { userId } = req.params;
+    const { projectIds } = req.body;
 
     if (!userId || !Array.isArray(projectIds) || projectIds.length === 0) {
       return res.status(400).json({
@@ -129,7 +130,8 @@ const assignTasksToUser = async (req, res) => {
       });
     }
 
-    const { userId, taskIds } = req.body;
+    const { userId } = req.params;
+    const { taskIds } = req.body;
 
     if (!userId || !Array.isArray(taskIds) || taskIds.length === 0) {
       return res.status(400).json({
@@ -157,11 +159,21 @@ const assignTasksToUser = async (req, res) => {
       });
     }
 
+    const projectIds = [...new Set(tasks.map((task) => task.projectId.toString()))];
+
     await Task.updateMany(
       { _id: { $in: taskIds } },
       { 
         assignedTo: userId,
         updatedAt: new Date()
+      }
+    );
+
+    await Project.updateMany(
+      { _id: { $in: projectIds } },
+      {
+        $addToSet: { members: userId },
+        $set: { updatedAt: new Date() }
       }
     );
 

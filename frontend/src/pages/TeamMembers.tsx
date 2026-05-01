@@ -10,11 +10,7 @@ import {
   UserGroupIcon,
   FolderIcon,
   CheckCircleIcon,
-  ClockIcon,
-  XMarkIcon,
-  PlusIcon,
-  FunnelIcon,
-  ArrowTrendingUpIcon
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 
 export const TeamMembers: React.FC = () => {
@@ -30,6 +26,13 @@ export const TeamMembers: React.FC = () => {
   const [assignType, setAssignType] = useState<'projects' | 'tasks'>('projects');
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+
+  const normalizeList = (data: any, key: string) => {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.items)) return data.items;
+    if (Array.isArray(data?.[key])) return data[key];
+    return [];
+  };
 
   useEffect(() => {
     if (user?.role !== 'Admin') {
@@ -49,13 +52,13 @@ export const TeamMembers: React.FC = () => {
       ]);
 
       if (membersRes.success) {
-        setMembers(membersRes.data);
+        setMembers(Array.isArray(membersRes.data) ? membersRes.data : []);
       }
       if (projectsRes.success) {
-        setProjects(projectsRes.data.items || projectsRes.data);
+        setProjects(normalizeList(projectsRes.data, 'projects'));
       }
       if (tasksRes.success) {
-        setTasks(tasksRes.data.items || tasksRes.data);
+        setTasks(normalizeList(tasksRes.data, 'tasks'));
       }
     } catch (err: any) {
       setError(err.message || 'Failed to fetch team data');
@@ -176,6 +179,8 @@ export const TeamMembers: React.FC = () => {
                     onClick={() => {
                       setSelectedMember(member);
                       setAssignType('projects');
+                      setSelectedProjects([]);
+                      setSelectedTasks([]);
                       setShowAssignModal(true);
                     }}
                     className="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors duration-200"
@@ -187,6 +192,8 @@ export const TeamMembers: React.FC = () => {
                     onClick={() => {
                       setSelectedMember(member);
                       setAssignType('tasks');
+                      setSelectedProjects([]);
+                      setSelectedTasks([]);
                       setShowAssignModal(true);
                     }}
                     className="p-2 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors duration-200"
@@ -282,6 +289,11 @@ export const TeamMembers: React.FC = () => {
                   </div>
                 </label>
               ))}
+              {(assignType === 'projects' ? projects : tasks).length === 0 && (
+                <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-4 text-center text-gray-400">
+                  No {assignType === 'projects' ? 'projects' : 'tasks'} available to assign.
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end space-x-3 mt-6">
