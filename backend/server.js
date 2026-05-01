@@ -9,6 +9,14 @@ const routes = require('./src/routes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const requiredEnv = ['MONGODB_URI', 'JWT_SECRET'];
+const missingEnv = requiredEnv.filter((key) => !process.env[key]);
+
+if (missingEnv.length > 0) {
+  console.error(`Missing required environment variables: ${missingEnv.join(', ')}`);
+  process.exit(1);
+}
+
 connectDB();
 
 app.use(helmet());
