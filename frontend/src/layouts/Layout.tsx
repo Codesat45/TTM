@@ -15,16 +15,16 @@ export const Layout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-netflix-black">
+    <div className="min-h-screen bg-netflix-black lg:flex">
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
       
-      <div className={`flex flex-col h-screen transition-all duration-300 ${isSidebarOpen ? 'lg:pl-64' : ''}`}>
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col transition-all duration-300">
         <Navbar 
           onSidebarToggle={toggleSidebar} 
           isSidebarOpen={isSidebarOpen} 
         />
         
-        <main className="flex-1">
+        <main className="min-h-0 flex-1 overflow-y-auto">
           <div className="w-full px-2 sm:px-4 lg:px-6 py-4">
             <Outlet />
           </div>
